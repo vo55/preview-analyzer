@@ -33,54 +33,22 @@ class State(rx.State):
 
     def load_dashboard(self):
         if self.router.page.params['token'] == os.environ.get('DASHBOARD_TOKEN'):
+            response = []
             self.data = []
-            with open('/tmp/reflexlog.json', 'r') as f:
-                response = json.load(f)
-            for entry in response["ip_user_agents"]:
+            with open('/tmp/nginx.json', 'r') as f:
+                for json_line in f.readlines():
+                    line = json.loads(json_line)
+                    response.append(line)
+            for entry in response:
                 self.data.append(
                     [
-                        entry['page'],
-                        entry['user_agent'],
-                        entry['ip'],
-                        entry['time']
+                        entry['request'],
+                        entry['http_user_agent'],
+                        entry['remote_addr'],
+                        entry['time_local']
                     ]
                 )
 
-    def same_site_redirect(self):
-        # Welcome Page (Index)
-        return rx.redirect('/')
-
-    def external_site_redirect(self):
-        # Welcome Page (Index)
-        return rx.redirect('https://example.com')
-
-    def ssrf_redirect_magic(self):
-        return rx.redirect('http://169.254.169.254')
-
-    def ssrf_redirect_local(self):
-        return rx.redirect('http://127.0.0.1')
-
-    def redirect_loop(self):
-        return rx.redirect('/redirect-loop')
-
-
-def index() -> rx.Component:
-    # Welcome Page (Index)
-    return rx.container(
-        rx.color_mode.button(position="top-right"),
-        rx.vstack(
-            rx.heading("Preview Analyzer", size="9"),
-            rx.text(
-                "Lorem Ipsum ",
-                rx.code(f"{config.app_name}/{config.app_name}.py"),
-                size="5",
-            ),
-            spacing="5",
-            justify="center",
-            min_height="85vh",
-        ),
-        rx.logo(),
-    )
 
 def dashboard() -> rx.Component:
     return rx.vstack(
@@ -94,10 +62,4 @@ def dashboard() -> rx.Component:
     )
 
 app = rx.App()
-app.add_page(index, on_load=State.log_access)
-app.add_page(index, route="/same-site-redirect", on_load=[State.log_access, State.same_site_redirect])
-app.add_page(index, route="external-redirect", on_load=[State.log_access, State.external_site_redirect])
-app.add_page(index, route="/redirect-loop", on_load=[State.log_access, State.redirect_loop])
-app.add_page(index, route="/ssrf-redirect-magic", on_load=[State.log_access, State.ssrf_redirect_magic])
-app.add_page(index, route="/ssrf-redirect-local", on_load=[State.log_access, State.ssrf_redirect_magic])
 app.add_page(dashboard, route="/dashboard", on_load=State.load_dashboard)

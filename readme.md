@@ -10,13 +10,18 @@ I did though and I wanted to research:
 In order to comfortably analyze multiple pages I created a little service that would log the access and return it for me.
 
 ### Starting the server
+1. Move the `nginx.conf` to the directory - probably something like `/etc/nginx/nginx.conf`
+2. Start the nginx server
+3. Start the reflex server with:
+
 `python3 -m venv venv`
 
 `source venv/bin/active`
 
 `pip install reflex`
 
-`export DASHBOARD_TOKEN=<my-token>; export FRONTEND_PORT=80 && reflex run --env prod`
+`export DASHBOARD_TOKEN=<my-token> && reflex run`
+
 
 ### Routes
 - `/` - a simple page that a client can directly access
