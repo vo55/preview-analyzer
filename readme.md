@@ -11,9 +11,12 @@ In order to comfortably analyze multiple pages I created a little service that w
 
 ### Starting the server
 `python3 -m venv venv`
+
 `source venv/bin/active`
+
 `pip install reflex`
-`export DASHBOARD_TOKEN=<my-token> && reflex run`
+
+`export DASHBOARD_TOKEN=<my-token>; export FRONTEND_PORT=80 && reflex run --env prod`
 
 ### Routes
 - `/` - a simple page that a client can directly access

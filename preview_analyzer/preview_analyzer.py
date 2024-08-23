@@ -33,6 +33,7 @@ class State(rx.State):
 
     def load_dashboard(self):
         if self.router.page.params['token'] == os.environ.get('DASHBOARD_TOKEN'):
+            self.data = []
             with open('/tmp/reflexlog.json', 'r') as f:
                 response = json.load(f)
             for entry in response["ip_user_agents"]:
